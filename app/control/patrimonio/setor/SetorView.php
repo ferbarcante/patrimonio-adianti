@@ -38,7 +38,7 @@ class SetorView extends TPage
         $nome = new TEntry('nome');
         $nm_pessoa = new TEntry('nm_pessoa');
         $codigo = new TEntry('codigo');
-        $cidade = new TEntry('endereco->nm_cidade');
+        $cidade = new TEntry('nm_cidade');
 
         $this->form->addFields([new TLabel('Nome:')], [$nome]);
         $this->form->addFields([new TLabel('Responsável:')], [$nm_pessoa]);
@@ -123,12 +123,29 @@ class SetorView extends TPage
         $data = $this->form->getData();
         $filter[];
 
+        TSession::setValue('Setor_filter', NULL);
+
         if (isset($data->codigo) && ($data->nome = '') && ($data->nm_pessoa = '') && ($data->cidade = ''))
         {
             $filter[] = new TFilter('cd_setor', 'like', "%{$data->codigo}%");
-
-            TSession::setValue('')
+        } 
+        if (isset($data->nome) && ($data->codigo = '') && ($data->nm_pessoa = '') && ($data->cidade = ''))
+        {
+            $filter[] = new TFilter('nm_setor', 'like', "%{$data->nome}%");
+        } 
+        if (isset($data->nm_pessoa) && ($data->nome = '') && ($data->codigo = '') && ($data->cidade = ''))
+        {
+            $filter[] = new TFilter('nm_pessoa', 'like', "%{$data->nm_pessoa}%");
+        } 
+        if (isset($data->cidade) && ($data->nome = '') && ($data->nm_pessoa = '') && ($data->cidade = ''))
+        {
+            $filter[] = new TFilter('nm_cidade', 'like', "%{$data->cidade}%");
         }
+
+        TSession::setValue('Setor_filter', $filter[]);
+        TSession::setValue('');
+
+        $this->onReload($param);
     }
 
     function onEdit($param = NULL)
