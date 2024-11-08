@@ -6,6 +6,10 @@
                 <icon>fas:users fa-fw</icon>
                 <action>PessoaView</action>
             </menuitem>
+            <menuitem label='Setores'>
+                <icon>fas:briefcase fa-fw</icon>
+                <action>SetorView</action>
+            </menuitem>
         </menu>
     </menuitem>
     <menuitem label='_t{Administration}'>
