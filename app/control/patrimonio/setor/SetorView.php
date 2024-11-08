@@ -172,16 +172,31 @@ class SetorView extends TPage
             TTransaction::open('patrimonio');
             $repository = new TRepository(self::$repository);
             $criteria = new TCriteria;
+            $limit = 10;
 
             if(empty($param['order']))
             {
                 $param['order'] = 'id_setor';
                 $param['direction'] = 'asc';
             } 
-
             
+            // configura o critério com base nos parâmetros da URL
+            $criteria->setProperties($param); // order, offset
+            $criteria->setProperty('limit', $limit);
+            // verifica se usuário preencheu um filtro
+            
+            if (TSession::getValue('Setor_filter'))
+            {
+                // TODO: FAZER FOREACH PARA ACESSAR O ARRAY DO SETOR_FILTER
+                $criteria->add(TSession::getValue('Setor_filter'));
+            }
+            
+            // carrega os objetos conforme o critério de seleção
+            $objects = $repository->load($criteria);
             $criteria->setProperties($param);
             $objects = $repository->load($criteria);
+            $this->datagrid->clear();
+
 
             if($objects)
             {
@@ -190,10 +205,16 @@ class SetorView extends TPage
                     $this->datagrid->addItem($object);
                 }
             }
-            
-            $this->datagrid->render();
-            $criteria->resetProperties();
-            $count = $repository->count($criteria);
+
+             // reset nos critérios (limit, offset)
+             $criteria->resetProperties();
+             $count = $repository->count($criteria);
+             
+             $this->pageNavigation->setCount($count); // qtde registros
+             $this->pageNavigation->setProperties($param); // order, page
+             $this->pageNavigation->setLimit($limit); // limit
+             
+             $this->loaded = true;
 
         } catch (Exception $e)
         {
